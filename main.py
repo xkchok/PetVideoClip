@@ -2,6 +2,8 @@ from src import clip_video, text_overlay
 import os
 
 def main():
+    os.makedirs("output", exist_ok=True)
+    
     video_file = "3191251-uhd_4096_2160_25fps/3191251-uhd_4096_2160_25fps.mp4"
     h5_file = "3191251-uhd_4096_2160_25fps/3191251-uhd_4096_2160_25fps_superanimal_quadruped_snapshot-fasterrcnn_resnet50_fpn_v2-004_snapshot-hrnet_w32-004.h5"
     clipped_video_file = "interesting_segments_clip.mp4"
@@ -27,6 +29,7 @@ def main():
         caption_options,
         font,
         output_video,
+        color=(254, 153, 0, 255),
         animate_text=True,
     )
 

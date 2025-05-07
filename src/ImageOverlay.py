@@ -92,7 +92,7 @@ class ImageOverlay:
             img = Image.alpha_composite(self.image, overlay)
             output_file_name = path.splitext(self.image_file_name)[0] + "_overlay.png"
             img.save(output_file_name)
-            print(f"Overlay image saved as: {output_file_name}")
+            # print(f"Overlay image saved as: {output_file_name}")
             return True, output_file_name
             
         except Exception as e:
