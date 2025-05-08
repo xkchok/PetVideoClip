@@ -12,3 +12,6 @@ wheels/
 # Output files
 output/
 frames/
+
+# Temporary files
+temp/

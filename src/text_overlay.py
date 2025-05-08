@@ -188,7 +188,7 @@ def create_video_from_images(image_paths, output_video="output/output.mp4", fps=
 def pipeline(video_path, caption_options, font, output_video="output/output.mp4",
             bg_tint_color=(0, 0, 0), bg_transparency=0, color=(255, 255, 255, 255),
             draw_shadow=True, animate_text=False, animation_interval=10,
-            animation_offset=0.01, clip_batch_size=16, num_processes=None):
+            animation_offset=0.01, clip_batch_size=16, num_processes=None, num_captions=4):
     """Main function to run CLIP-based image overlay and video creation."""
     
     # 1. Load CLIP model
@@ -203,7 +203,8 @@ def pipeline(video_path, caption_options, font, output_video="output/output.mp4"
         bg_tint_color=bg_tint_color, bg_transparency=bg_transparency,
         color=color, draw_shadow=draw_shadow, animate_text=animate_text,
         animation_interval=animation_interval, animation_offset=animation_offset,
-        clip_batch_size=clip_batch_size, num_processes=num_processes
+        clip_batch_size=clip_batch_size, num_processes=num_processes,
+        num_captions=num_captions
     )
 
     # 4. Create video from images

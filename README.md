@@ -13,6 +13,10 @@ And you should be good to go!
 ```bash
 $ uv run main.py
 ```
+or
+```bash
+$ streamlit run app.py  # GUI
+```
 If you'd like to execute the files under src/ as a script, 
 ```bash
 $ uv run -m src.text_overlay

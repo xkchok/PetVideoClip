@@ -120,8 +120,7 @@ class VideoClipper:
         final_clip = self.clip_video_segments(buffer_duration=buffer_duration)
 
         if final_clip:
-            output_path = f"output/{output_filename}"
-            final_clip.write_videofile(output_path, codec="libx264")
+            final_clip.write_videofile(output_filename, codec="libx264")
         else:
             print("No video created.")
 
