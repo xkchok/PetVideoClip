@@ -4,6 +4,8 @@ from src import clip_video, text_overlay
 import sys
 from io import StringIO
 import contextlib
+from PIL import Image, ImageDraw, ImageFont
+import io
 
 @contextlib.contextmanager
 def capture_stdout():
@@ -21,10 +23,12 @@ def main():
     os.makedirs("temp", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     
-    st.title("Pet Video Clipper")
+    st.title("🎥 Pet Video Clipper")
+
+    st.write("---")
     
     # File uploaders
-    st.header("1. Upload Files")
+    st.header("📁 1. Upload Files")
     video_file = st.file_uploader("Upload Video File", type=['mp4'])
     h5_file = st.file_uploader("Upload H5 File", type=['h5'])
     
@@ -40,37 +44,52 @@ def main():
         temp_h5_path = f"temp/{h5_file.name}"
         with open(temp_h5_path, "wb") as f:
             f.write(h5_file.getvalue())
+
+    st.write("---")
     
     # Clipping parameters
-    st.header("2. Clipping Parameters")
+    st.header("✂️ 2. Clipping Parameters")
     clipped_video_name = st.text_input("Clipped Video Filename", "interesting_segments_clip.mp4")
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        buffer_duration = st.number_input("Buffer Duration (seconds)", 
-                                        min_value=0.1, 
-                                        max_value=2.0, 
-                                        value=0.2, 
-                                        step=0.1)
+        buffer_duration = st.number_input(
+            "Buffer Duration (seconds)", 
+            min_value=0.1, 
+            max_value=2.0, 
+            value=0.2, 
+            step=0.1,
+            help="Controls the time window around interesting frames. A larger buffer will include more context before and after each detected moment."
+        )
+    
     with col2:
-        std_multiplier = st.number_input("Standard Deviation Multiplier", 
-                                       min_value=0.1, 
-                                       max_value=2.0, 
-                                       value=0.5, 
-                                       step=0.1)
+        std_multiplier = st.number_input(
+            "Standard Deviation Multiplier", 
+            min_value=0.1, 
+            max_value=2.0, 
+            value=0.5, 
+            step=0.1,
+            help="Adjusts the sensitivity of the threshold. Higher values make detection more selective, while lower values will detect more moments."
+        )
+    
     with col3:
-        window_size = st.number_input("Window Size", 
-                                    min_value=3, 
-                                    max_value=15, 
-                                    value=5, 
-                                    step=2)
+        window_size = st.number_input(
+            "Window Size", 
+            min_value=3, 
+            max_value=15, 
+            value=5, 
+            step=2,
+            help="Sets the rolling average window for smoothing speed data. Larger windows create smoother transitions but might miss quick movements."
+        )
+    
+    st.write("---")
     
     # Text overlay parameters
-    st.header("3. Text Overlay Parameters")
+    st.header("✨ 3. Text Overlay Parameters")
     output_video_name = st.text_input("Output Video Filename", "overlayed_video.mp4")
     
     # Caption management
-    st.subheader("Captions")
+    st.subheader("💭 Captions")
     num_captions = st.number_input("Number of Captions", min_value=1, max_value=4, value=1)
     
     default_captions = [
@@ -98,14 +117,43 @@ def main():
                 st.session_state.captions.pop(i)
                 st.rerun()
     
-    # Font selection
-    st.subheader("Font Settings")
+    # Font selection with preview
+    st.subheader("🔤 Font Settings")
     available_fonts = [f for f in os.listdir("fonts") if f.endswith(('.ttf', '.otf'))]
-    selected_font = st.selectbox("Select Font", available_fonts)
-    font_path = f"fonts/{selected_font}"
+    
+    # Create two columns for font selection and preview
+    font_col1, font_col2 = st.columns([1, 2])
+    
+    with font_col1:
+        selected_font = st.selectbox("Select Font", available_fonts)
+        font_path = f"fonts/{selected_font}"
+    
+    with font_col2:
+        # Create a preview of the selected font
+        preview_text = "Preview Text"
+        try:
+            # Load and render the font
+            font_size = 40
+            font = ImageFont.truetype(font_path, font_size)
+            
+            # Draw the text
+            img = Image.new('RGB', (400, 100), color='white')
+            d = ImageDraw.Draw(img)
+            d.text((10, 30), preview_text, font=font, fill='black')
+            
+            # Convert to bytes for display
+            buf = io.BytesIO()
+            img.save(buf, format='PNG')
+            buf.seek(0)
+            
+            # Display the preview
+            st.image(buf, caption="Font Preview")
+            
+        except Exception as e:
+            st.error(f"Could not preview font: {str(e)}")
     
     # Color and style settings
-    st.subheader("Style Settings")
+    st.subheader("🎨 Style Settings")
     col1, col2 = st.columns(2)
     with col1:
         font_color = st.color_picker("Font Color", "#FFFFFF")
